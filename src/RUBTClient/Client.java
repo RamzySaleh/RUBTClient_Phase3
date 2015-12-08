@@ -63,7 +63,7 @@ public class Client implements Runnable{
         Client.peer_id = tracker.peer_id;
         listPiecesDownloaded=new ArrayList<Integer>(numPieces);
         Client.fileName = fileName;
-        rarestPiece = new RarestPiece(tracker);
+        Client.rarestPiece = new RarestPiece(tracker);
 				
 	}
 
@@ -116,7 +116,7 @@ public class Client implements Runnable{
         	tracker.sendTrackerRequest(Event.STARTED);
         	long timeBegin = System.nanoTime();
         	
-        	ExecutorService threadPool = Executors.newFixedThreadPool(2);
+        	ExecutorService threadPool = Executors.newFixedThreadPool(20);
 
         	for (int i = 0; i < peersSelected.size(); i++) {
         		final int j = i;
@@ -201,13 +201,21 @@ public class Client implements Runnable{
                 
                 
                 length = peer.in.readInt();
-                response_id =  (int)peer.in.readByte();
+                response_id = (int) peer.in.readByte();
+                
                
                 if (response_id == 1)
                 {
                     System.out.println("Peer at: "+peer.getIP()+" unchoked.");
                     break;
                 }
+                
+                if(response_id == 5){
+                	byte[] bitfield = new byte[length-1];
+                	rarestPiece.bitfieldUpdate(bitfield);
+                	peer.in.readFully(bitfield);
+                }
+                
                 else
                 {
                     if (i == 19)

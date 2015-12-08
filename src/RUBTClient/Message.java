@@ -151,10 +151,16 @@ public class Message {
 		
 		String message;
 		
-		if(messageReceived.length <= 4){
+		if(messageReceived.length < 4){
 			throw new Exception("Tried to decode a message, but it wasn't of the right form");
 		}
 
+		if(messageReceived.length == 4){
+			message = "keep-alive";
+			return message;
+		}
+
+			
 		int messageID = messageReceived[4];
 		
 		switch(messageID){
@@ -202,7 +208,7 @@ public class Message {
 	 * @return byte array representing integer
 	 * 
 	 */
-	private byte[] intToByteArr(int i){
+	public static byte[] intToByteArr(int i){
 		
 		byte[] byteArray = {(byte)(i >>> 24), (byte)(i >>> 16), (byte) (i >>> 8), (byte)(i)};
 		return byteArray;
