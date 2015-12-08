@@ -41,14 +41,16 @@ public class Client implements Runnable{
     private static int alreadyDownloaded;
     private static String fileName;
     private static RarestPiece rarestPiece;
+    private static PeerManager peerManager;
     public static File fp;
     public static boolean[] pieceDownloaded;
     public static ArrayList<Integer> listPiecesDownloaded;
     public static String userInput = "";
    
     
-    public Client (Tracker tracker, File fp, String fileName){
+    public Client (Tracker tracker, PeerManager peerManager, File fp, String fileName){
     	this.tracker = tracker;
+    	this.peerManager = peerManager;
     	Client.torrentInfo = tracker.torrentInfo;
     	this.peers = tracker.peers;
     	Client.fp = fp;
@@ -116,7 +118,7 @@ public class Client implements Runnable{
         	
         	ExecutorService threadPool = Executors.newFixedThreadPool(2);
 
-        	for (int i = 0; i < 2; i++) {
+        	for (int i = 0; i < peersSelected.size(); i++) {
         		final int j = i;
         	    threadPool.submit(
         	    		new Runnable() {public void run() { try {
@@ -293,16 +295,9 @@ public class Client implements Runnable{
     private static List<Peer> findPeers(){
 
     	List<Peer> peersToDownload = new LinkedList<Peer>();
-    	if (peers == null) System.out.println("Peers is null!");
-        for (int i = 0; i < peers.size(); i++)
-        {
-                String currentPeerIP = peers.get(i).getIP();
-                if (currentPeerIP.equals("128.6.171.130") || currentPeerIP.equals("128.6.171.131"))
-                {
-                	peersToDownload.add(peers.get(i));                    
-                }           
-        }
-
+    	
+    	peersToDownload = peerManager.findPeersDownload();
+    	
         return peersToDownload;
     }
 
@@ -429,7 +424,9 @@ public class Client implements Runnable{
      */
     private static synchronized int findPieceToDownload(){
     	
-    	return rarestPiece.findNextPiece();
+    	int j = rarestPiece.findNextPiece();
+    	System.out.println("The rarest piece not yet downloaded is at = "+j);
+    	return j;
     }
     
     /**

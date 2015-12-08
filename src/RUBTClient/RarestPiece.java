@@ -1,5 +1,13 @@
 package RUBTClient;
 
+/**
+ * Group 24
+ * @author Rohan Vernekar
+ * @author Yaman Saadi
+ * @author Ramzy Saleh
+ *
+ */
+
 import GivenTools.*;
 import java.util.ArrayList;
 

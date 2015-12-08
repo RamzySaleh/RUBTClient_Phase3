@@ -36,8 +36,10 @@ public class RUBTClient
        
         File fp = new File("File.tmp");
         
+        final PeerManager peerManager = new PeerManager(tracker);
+        
         // Create a Client object.
-        final Client downloadClient = new Client(tracker, fp, args[1]);
+        final Client downloadClient = new Client(tracker, peerManager, fp, args[1]);
         
         // Check if the file was ever downloaded before. If so, load verified pieces.
         downloadClient.checkFileState();
