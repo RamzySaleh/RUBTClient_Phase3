@@ -100,15 +100,23 @@ public class RarestPiece {
 	public int findNextPiece(){
 		
 		int j = 0;
-		
+
 		while(j < ordered.size()){
 			if (ordered.get(j).done == false){
 				ordered.get(j).done = true;
 				return ordered.get(j).pieceIndex;
 			}
 		}
+		return -1;	
+	}
+	
+	public void bitfieldUpdate(byte[] bitfield){
 		
-		return -1;
+		for (int j = 0; j < bitfield.length; j++){
+			if (bitfield[j] != 0){
+				indexIncrement(j);
+			}
+		}
 		
 	}
 	
