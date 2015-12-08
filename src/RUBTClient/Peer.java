@@ -17,6 +17,10 @@ public class Peer
     private String ip;
     private byte[] peerID;
     private int port;
+    private long startTime;
+    private long endTime;
+    private int amountDownloadedFrom;
+    private boolean isChoked;
 
     private boolean isPeerConnected;
     public Socket peerSocket = null;
@@ -42,6 +46,9 @@ public class Peer
         peerSocket = new Socket(ip, port);
         out = new DataOutputStream(peerSocket.getOutputStream());
         in =  new DataInputStream(peerSocket.getInputStream());
+        amountDownloadedFrom = 0;
+        isChoked = false;
+        isPeerConnected = true;
     }
 
     public void disconnectPeer()
@@ -50,6 +57,7 @@ public class Peer
         {
             try
             {
+            	isPeerConnected = false;
                 peerSocket.close();
             }
             catch (IOException e)
@@ -109,5 +117,40 @@ public class Peer
     {
         return isPeerConnected;
     }
+    
+    public boolean getIsPeerChoked () {
+    	return isChoked;
+    }
+    
+    public void startTimer(){
+    	startTime = System.nanoTime();
+    }
+    
+    public long elapsedTime(){
+    	long currentTime = System.nanoTime();
+    	return startTime - currentTime;
+    }
+    
+    public void chokePeer(){
+    	isChoked = true;
+    	amountDownloadedFrom = 0;
+    }
+    
+    public void unchokePeer(){
+    	isChoked = false;
+    }
+    
+    public void incrementDownloaded(int amount) {
+    	amountDownloadedFrom += amount;
+    }
+    
+    public double downloadRate(){
+    	
+    	long elapsedTime = elapsedTime();
+    	double rate = amountDownloadedFrom/elapsedTime;
+    	
+    	return rate;
+    }
 
+    
 }
