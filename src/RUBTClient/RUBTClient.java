@@ -116,6 +116,7 @@ public class RUBTClient
         			System.out.println("Tracker updated!");        			
         			tracker.sendTrackerRequest(Event.NONE);
     			}
+    			i++;
     		}
     		System.out.println("Tracker update quit!");
     	}
