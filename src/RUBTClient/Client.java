@@ -40,6 +40,7 @@ public class Client implements Runnable{
     private static int fileLength;
     private static int alreadyDownloaded;
     private static String fileName;
+    private static RarestPiece rarestPiece;
     public static File fp;
     public static boolean[] pieceDownloaded;
     public static ArrayList<Integer> listPiecesDownloaded;
@@ -60,6 +61,7 @@ public class Client implements Runnable{
         Client.peer_id = tracker.peer_id;
         listPiecesDownloaded=new ArrayList<Integer>(numPieces);
         Client.fileName = fileName;
+        rarestPiece = new RarestPiece(tracker);
 				
 	}
 
@@ -423,21 +425,11 @@ public class Client implements Runnable{
     
     /**
      * 
-     * Search the boolean array and find the next piece to download.
-     * If we already have the piece at index k, pieceDownloaded[k] = true;
-     * If we don't already have it, it is false.
-     * 
      * @return index of piece to download
      */
     private static synchronized int findPieceToDownload(){
     	
-    	for (int k = 0; k<numPieces; k++){
-    		if(pieceDownloaded[k] == false){
-    			pieceDownloaded[k] = true;
-    			return k;
-    		}
-    	}
-    	return -1;
+    	return rarestPiece.findNextPiece();
     }
     
     /**

@@ -85,10 +85,11 @@ public class RarestPiece {
 			}
 			currentRarityVal ++;
 		}
+		ordered = temp;
 		
 	}
 	
-	private int findNextPiece(){
+	public int findNextPiece(){
 		
 		int j = 0;
 		
@@ -102,6 +103,5 @@ public class RarestPiece {
 		return -1;
 		
 	}
-	
 	
 }
