@@ -280,12 +280,12 @@ public class Client implements Runnable{
                     listPiecesDownloaded.add(i);
                     System.arraycopy(piece, 0, fileOut, i * pieceLength, currentPieceLength);
                     updateSaveFile(piece,i);
+                    count ++;
                 }
                 else
                 {
-                    throw new Exception("Incorrect piece SHA-1");
+                	System.out.println("Could not verify SHA-1 hash, or peer does not have piece");
                 }   
-                count++;
             }
         }
         
