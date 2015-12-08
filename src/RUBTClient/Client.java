@@ -123,6 +123,7 @@ public class Client implements Runnable{
         	    threadPool.submit(
         	    		new Runnable() {public void run() { try {
         	    			downloadPiece(peersSelected.get(j));
+        	    			peersSelected.get(j).startTimer();
 						} catch (Exception e) {
 							e.printStackTrace();
 						} 
@@ -277,6 +278,7 @@ public class Client implements Runnable{
                 {
                     System.out.println("Piece #"+i+" verified, downloaded from: "+peer.getIP());
                     pieceDownloaded[i] = true;
+                    peer.incrementDownloaded(currentPieceLength);
                     listPiecesDownloaded.add(i);
                     System.arraycopy(piece, 0, fileOut, i * pieceLength, currentPieceLength);
                     updateSaveFile(piece,i);
