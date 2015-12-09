@@ -99,7 +99,7 @@ public class PeerManager {
             if (currentPeerIP.equals("128.6.171.130") || currentPeerIP.equals("128.6.171.131"))
             {
             	addedCount++;
-            	downloadPeers.add(peers.get(i));                    
+            	downloadPeers.add(peers.get(i));
             }           
 		}
 
@@ -110,9 +110,9 @@ public class PeerManager {
             if (!currentPeerIP.equals("128.6.171.130") && !currentPeerIP.equals("128.6.171.131"))
             {
             	addedCount++;
-            	if (addedCount > 6) break;
-            	downloadPeers.add(peers.get(i));  
-            }           
+            	if (addedCount > 15) break;
+            	downloadPeers.add(peers.get(i));
+            }
 		}
 
 	}

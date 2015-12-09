@@ -285,7 +285,7 @@ public class Client implements Runnable{
             }
         }
         catch (EOFException e) {
-            e.printStackTrace();
+            System.out.println("Peer at " + peer.getIP() + " disconnected");
             Thread.currentThread().interrupt();
             return;
         }
