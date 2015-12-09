@@ -20,10 +20,11 @@ public class PeerManager {
 
 	
 	private TorrentInfo torrentInfo;
-	private ArrayList<Peer> downloadPeers;
-	private ArrayList<Peer> uploadPeers;
+	public ArrayList<Peer> downloadPeers;
+	public ArrayList<Peer> uploadPeers;
 	private List<Peer> peers;
 	private Tracker tracker;
+	public ArrayList<Peer> peersConnectedTo;
 	
 	public PeerManager(Tracker tracker){
 		this.tracker = tracker;
@@ -36,7 +37,7 @@ public class PeerManager {
 	public void ConnectionManager(){
 		
 		int maxConnections = 15;
-		ArrayList<Peer> peersConnectedTo = new ArrayList<Peer>();
+		peersConnectedTo = new ArrayList<Peer>();
 		
 		System.out.println("The number of peers is = "+peers.size());
 		
@@ -47,12 +48,14 @@ public class PeerManager {
 			peersConnectedTo.add((peers.get(peerConnectedCount)));
 			try {
 				peers.get(peerConnectedCount).connectPeer();
+				peerConnectedCount ++;
 			} catch (IOException e) {
 				System.out.println("Could not connect to Peer at IP = "+peers.get(peerConnectedCount).getIP());
 			}
 			
 		}	
 		
+		findPeersDownload();
 		
 		/**
 		 * 
@@ -80,9 +83,8 @@ public class PeerManager {
 	}
 	
 	
-	public List<Peer> findPeersDownload(){
+	public void findPeersDownload(){
 		
-		List<Peer> peersToDownload = new LinkedList<Peer>();
 		if (peers == null) System.out.println("Peers is null!");
 		int addedCount = 0;
 		for (int i = 0; i < peers.size(); i++)
@@ -91,7 +93,7 @@ public class PeerManager {
             if (currentPeerIP.equals("128.6.171.130") || currentPeerIP.equals("128.6.171.131"))
             {
             	addedCount++;
-            	peersToDownload.add(peers.get(i));                    
+            	downloadPeers.add(peers.get(i));                    
             }           
 		}
 		
@@ -102,11 +104,21 @@ public class PeerManager {
             {
             	addedCount++;
             	if (addedCount > 6) break;
-            	peersToDownload.add(peers.get(i));  
+            	downloadPeers.add(peers.get(i));  
             }           
 		}
 		
-		return peersToDownload;
 	}
 	
+	public Peer containsDownloadPeer(String ip){
+		
+		for (int j = 0; j < downloadPeers.size(); j++){
+			
+			if(downloadPeers.get(j).getIP() == ip){
+				return downloadPeers.get(j);
+			}
+			
+		}
+		return null;
+	}
 }

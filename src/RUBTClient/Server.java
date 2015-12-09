@@ -24,10 +24,14 @@ public class Server extends Thread implements Runnable{
 	private Tracker tracker;
 	private int port;
     private static ServerSocket serveSocket;
-	
-	public Server(Tracker tracker){
+    private PeerManager pm;
+    private final ArrayList<Socket> peerSockets;
+    
+	public Server(Tracker tracker, PeerManager pm){
 		this.tracker = tracker;
+		this.pm = pm;
 		port=tracker.port;
+		this.peerSockets = new ArrayList<Socket>();
 	}
 	
 	public void run(){
@@ -40,8 +44,8 @@ public class Server extends Thread implements Runnable{
 			System.out.println("Could not listen on port = "+port);
 			return;
 		}
-		final ArrayList<Socket> peerSockets= new ArrayList<Socket>(5);
-		Executor pool = Executors.newFixedThreadPool(5);
+		
+		Executor pool = Executors.newFixedThreadPool(6);
 		
 		int ind=0;
 		while(!Client.userInput.equals("-1")){
@@ -52,6 +56,7 @@ public class Server extends Thread implements Runnable{
 				e.printStackTrace();
 				System.out.println("Something went wrong with setting up a peer connection with server.");
 			}
+			
 			if (peerSockets.size() > 6){ 
 				System.out.println("The maximum number of peers to upload to has been reached.");
 				continue;
@@ -61,28 +66,32 @@ public class Server extends Thread implements Runnable{
 			final Socket peerSocket = peerSockets.get(ind);
 			final ServerConnection s = new ServerConnection(tracker, peerSockets.get(ind));
 			
-			Runnable r = new Runnable()
-            {
-               @Override
-               public void run()
-               {
-            	   	peerSocket.getInetAddress();
-       				s.run();
-               }
-            };
-            pool.execute(r);
+			if (numberOfUnchokedPeers() < 3){
+				Runnable r = new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						peerSocket.getInetAddress();
+						s.run();
+					}
+				};
+				pool.execute(r);
+			}
 			ind++;
 		}
     	System.out.println("Server quit!");
 	}
 	
-	public int numberOfUnchokedPeers(ArrayList<Socket> peerSockets){
+	public int numberOfUnchokedPeers(){
 		
 		int numberUnchokedPeers = 0;
 		
 		for (int j = 0; j < peerSockets.size(); j++){
-			
-			
+			Peer peerFromConnectedTo = pm.containsDownloadPeer(peerSockets.get(j).getInetAddress().toString());
+			if(peerFromConnectedTo != null){
+				if(!peerFromConnectedTo.getIsPeerChoked()) numberUnchokedPeers ++;
+			}
 		}
 		
 		return numberUnchokedPeers;

@@ -83,19 +83,17 @@ public class Client implements Runnable{
     public synchronized void fetchFile(String fileName) throws Exception {
     	
         // Select peer to connect to
-        final List<Peer> peersSelected = findPeers();
-
-        if (peersSelected == null)
+        if (peerManager.downloadPeers == null)
         {
             throw new Exception("Could not connect to a peer!");
-        } else if (peersSelected.size() == 1) {
+        } else if (peerManager.downloadPeers.size() == 1) {
         	
         	System.out.println("Only found one peer. Downloading from this peer only");
         	
             // Send HTTP GET to tracker to indicate download started
         	tracker.sendTrackerRequest(Event.STARTED);
          	long timeBegin = System.nanoTime();
-        	downloadPiece(peersSelected.get(0));
+        	downloadPiece(peerManager.downloadPeers.get(0));
         	long timeEnd = System.nanoTime();
         	System.out.println("Download time = "+(timeEnd-timeBegin)/1000000000+" seconds");
    
@@ -118,12 +116,12 @@ public class Client implements Runnable{
         	
         	ExecutorService threadPool = Executors.newFixedThreadPool(20);
 
-        	for (int i = 0; i < peersSelected.size(); i++) {
+        	for (int i = 0; i < peerManager.downloadPeers.size(); i++) {
         		final int j = i;
         	    threadPool.submit(
         	    		new Runnable() {public void run() { try {
-        	    			downloadPiece(peersSelected.get(j));
-        	    			peersSelected.get(j).startTimer();
+        	    			downloadPiece(peerManager.downloadPeers.get(j));
+        	    			peerManager.downloadPeers.get(j).startTimer();
 						} catch (Exception e) {
 							e.printStackTrace();
 						} 
@@ -296,19 +294,6 @@ public class Client implements Runnable{
                 peer.disconnectPeer();
             }
     	
-    }
-
-    /**
-     * Choose peers from peer list to connect to
-     * @return List of peers to connect to
-     */
-    private static List<Peer> findPeers(){
-
-    	List<Peer> peersToDownload = new LinkedList<Peer>();
-    	
-    	peersToDownload = peerManager.findPeersDownload();
-    	
-        return peersToDownload;
     }
 
     /**

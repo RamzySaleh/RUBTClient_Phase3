@@ -45,7 +45,7 @@ public class RUBTClient
         downloadClient.checkFileState();
         
 
-        final Server server = new Server(tracker);
+        final Server server = new Server(tracker, peerManager);
         
 
         final updateTracker ut = new updateTracker(tracker, trackerUpdateInterval);
