@@ -26,7 +26,7 @@ public class Server extends Thread implements Runnable{
     private static ServerSocket serveSocket;
     private PeerManager pm;
     private final ArrayList<Socket> peerSockets;
-    
+
 	public Server(Tracker tracker, PeerManager pm){
 		this.tracker = tracker;
 		this.pm = pm;
@@ -48,7 +48,50 @@ public class Server extends Thread implements Runnable{
 		Executor pool = Executors.newFixedThreadPool(6);
 		
 		int ind=0;
+		long previousTime = System.nanoTime(), currentTime;
 		while(!Client.userInput.equals("-1")){
+			currentTime = System.nanoTime();
+
+			// Choke peer with lowest rate
+			if (peerSockets.size() > 3) {
+				if ((currentTime - previousTime) >= 300000000) {
+					double lowestRate = Double.MAX_VALUE;
+					int lowestIndex = 0;
+					Peer peer;
+
+					for (int i = 0; i < peerSockets.size(); i++) {
+						peer = pm.containsDownloadPeer(peerSockets.get(i).getInetAddress().getHostAddress());
+						if (peer == null) {
+							continue;
+						}
+
+						if (peer.downloadRate() < lowestRate) {
+							lowestRate = peer.downloadRate();
+							lowestIndex = i;
+						}
+					}
+
+					peer = pm.containsDownloadPeer(peerSockets.get(lowestIndex).getInetAddress().getHostAddress());
+					if (peer != null) {
+						peer.chokePeer();
+					}
+
+					ArrayList<Integer> random = new ArrayList<Integer>();
+					for (int i = 0; i < pm.downloadPeers.size(); i++) {
+						random.add(i);
+					}
+					Collections.shuffle(random);
+
+					for (int i = 0; i < pm.downloadPeers.size(); i++) {
+						if (pm.downloadPeers.get(random.get(i)).getIsPeerChoked()) {
+							pm.downloadPeers.get(random.get(i)).unchokePeer();
+							break;
+						}
+					}
+
+					previousTime = currentTime;
+				}
+			}
 
 			try{
 				peerSockets.add(ind,serveSocket.accept());
@@ -56,7 +99,7 @@ public class Server extends Thread implements Runnable{
 				e.printStackTrace();
 				System.out.println("Something went wrong with setting up a peer connection with server.");
 			}
-			
+
 			if (peerSockets.size() > 6){ 
 				System.out.println("The maximum number of peers to upload to has been reached.");
 				continue;
@@ -64,7 +107,7 @@ public class Server extends Thread implements Runnable{
 			
 			
 			final Socket peerSocket = peerSockets.get(ind);
-			final ServerConnection s = new ServerConnection(tracker, peerSockets.get(ind));
+			final ServerConnection s = new ServerConnection(tracker, peerSockets.get(ind), pm);
 			
 			if (numberOfUnchokedPeers() < 3){
 				Runnable r = new Runnable()

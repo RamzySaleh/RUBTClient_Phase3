@@ -28,8 +28,9 @@ public class ServerConnection extends Thread{
 	private DataInputStream in;
 	private DataOutputStream out;
 	private Socket conn;
+	private PeerManager pm;
 
-	public ServerConnection(Tracker tracker, Socket conn) {
+	public ServerConnection(Tracker tracker, Socket conn, PeerManager pm) {
 		this.tracker = tracker;
 		torrentInfo = tracker.torrentInfo;
 		pieceLength = torrentInfo.piece_length;
@@ -37,6 +38,7 @@ public class ServerConnection extends Thread{
 		listPiecesDownloaded=Client.listPiecesDownloaded;
 		fileOut = Client.fileOut;
 		this.conn = conn;
+		this.pm = pm;
 
 		try{
 			out = new DataOutputStream(conn.getOutputStream());
@@ -137,6 +139,9 @@ public class ServerConnection extends Thread{
 		try{
 			out.write(unchoke.message);
 			out.flush();
+			if (pm.containsDownloadPeer(conn.getInetAddress().getHostAddress()) != null) {
+				pm.containsDownloadPeer(conn.getInetAddress().getHostAddress()).unchokePeer();
+			}
 		}
 		catch(IOException e){
 			System.out.println("Could not write to outstream.");
@@ -147,6 +152,23 @@ public class ServerConnection extends Thread{
 		byte[] request = null;
 		try {
 			while (!Client.userInput.equals("-1")) {
+				Peer peer = pm.containsDownloadPeer(conn.getInetAddress().getHostAddress());
+				if (peer.getIsPeerChoked() || peer == null) {
+					Message choke = new Message((byte)0, 1, -1, "-1".getBytes(), -1, -1, -1, -1, -1, "-1".getBytes());
+
+					try{
+						out.write(choke.message);
+						out.flush();
+					}
+					catch(IOException e){
+						System.out.println("Could not write to outstream.");
+						e.printStackTrace();
+					}
+
+					Thread.sleep(30000);
+					continue;
+				}
+
 				in.readFully(length);
 				lenInt = Client.byteArrToInt(length); 
 				request = new byte[lenInt];
