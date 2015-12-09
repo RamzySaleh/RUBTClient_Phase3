@@ -30,8 +30,6 @@ public class PeerManager {
 		this.tracker = tracker;
 		this.torrentInfo = tracker.torrentInfo;	
     	this.peers = tracker.peers;
-
-		ConnectionManager();
 	}
 	
 	
@@ -39,11 +37,13 @@ public class PeerManager {
 		
 		int maxConnections = 15;
 		peersConnectedTo = new ArrayList<Peer>();
-		
+
+		downloadPeers = new ArrayList<>();
+
 		System.out.println("The number of peers is = "+peers.size());
 		
 		int peerConnectedCount = 0;
-		
+
 		while(peerConnectedCount < maxConnections && peerConnectedCount < peers.size()){
 			
 			peersConnectedTo.add((peers.get(peerConnectedCount)));
@@ -53,9 +53,9 @@ public class PeerManager {
 			} catch (IOException e) {
 				System.out.println("Could not connect to Peer at IP = "+peers.get(peerConnectedCount).getIP());
 			}
-			
+
 		}	
-		
+
 		findPeersDownload();
 		
 		/**
@@ -81,6 +81,7 @@ public class PeerManager {
 			}
 			i++;
 		}
+
 	}
 	
 	

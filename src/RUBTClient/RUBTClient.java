@@ -52,7 +52,17 @@ public class RUBTClient
         
         // Pool that includes upload, download, and tracker update threads.
         ExecutorService pool = Executors.newFixedThreadPool(3);
-        
+
+        Runnable r0 = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                peerManager.ConnectionManager();
+            }
+        };
+        pool.execute(r0);
+
         Runnable r1 = new Runnable()
         {
            @Override
