@@ -100,10 +100,30 @@ public class PeerManager {
 			String currentPeerIP = peers.get(i).getIP();
             if (currentPeerIP.equals("128.6.171.130") || currentPeerIP.equals("128.6.171.131"))
             {
+<<<<<<< HEAD
             	downloadPeers.add(peers.get(i));                    
             }           
 		}
 
+=======
+            	addedCount++;
+            	downloadPeers.add(peers.get(i));
+            }           
+		}
+
+
+		for (int i = 0; i < peers.size(); i++)
+		{
+			String currentPeerIP = peers.get(i).getIP();
+            if (!currentPeerIP.equals("128.6.171.130") && !currentPeerIP.equals("128.6.171.131"))
+            {
+            	addedCount++;
+            	if (addedCount > 15) break;
+            	downloadPeers.add(peers.get(i));
+            }
+		}
+
+>>>>>>> origin/master
 	}
 	
 	// Returns the peer object of the corresponding IP address
