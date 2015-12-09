@@ -51,7 +51,7 @@ public class RUBTClient
         final updateTracker ut = new updateTracker(tracker, trackerUpdateInterval);
         
         // Pool that includes upload, download, and tracker update threads.
-        ExecutorService pool = Executors.newFixedThreadPool(3);
+        ExecutorService pool = Executors.newFixedThreadPool(4);
 
         Runnable r0 = new Runnable()
         {
@@ -117,16 +117,15 @@ public class RUBTClient
     		updateTracker.trackerUpdateInterval = trackerUpdateInterval;
     	}
     	public void run(){
-    		long startTime = System.nanoTime();
-    		long currentTime;
-    		int i = 0;
     		while(!Client.userInput.equals("-1")){
-    			currentTime = System.nanoTime();
-    			if(startTime-currentTime>(i*(trackerUpdateInterval)+10)){
+                try {
+                    Thread.sleep(1000 * trackerUpdateInterval);
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
         			System.out.println("Tracker updated!");        			
         			tracker.sendTrackerRequest(Event.NONE);
-    			}
-    			i++;
     		}
     		System.out.println("Tracker update quit!");
     	}

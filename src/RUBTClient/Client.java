@@ -286,9 +286,13 @@ public class Client implements Runnable{
         }
         catch (EOFException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
+            return;
         }
         catch (IOException e) {
             System.out.println("Couldn't connect to " + peer.getIP());
+            Thread.currentThread().interrupt();
+            return;
         }
         finally{
 
@@ -421,7 +425,9 @@ public class Client implements Runnable{
     private static synchronized int findPieceToDownload(){
     	
     	int j = rarestPiece.findNextPiece();
-    	System.out.println("The rarest piece not yet downloaded is at = "+j);
+        if (j != -1) {
+            System.out.println("The rarest piece not yet downloaded is at = " + j);
+        }
     	return j;
     }
     
