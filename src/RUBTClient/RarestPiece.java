@@ -13,6 +13,13 @@ import java.util.ArrayList;
 
 public class RarestPiece {
 	
+	/** sub-class providing each piece 3 values
+	 * 
+	 * 1. pieceIndex = index of the piece
+	 * 2. rarityValue = value of the rarity of piece, lowest is the most rare
+	 * 3. done = True if downloaded already, False is not yet downloaded
+	 * 
+	 */
 	private class Piece {
 		int pieceIndex;
 		int rarityValue;
@@ -38,6 +45,7 @@ public class RarestPiece {
 		initializeRarity();
 	}
 	
+	// This method initializes the rarity values of each piece to zero
 	private void initializeRarity(){
 		Piece p;
 		for(int i = 0; i<numPieces; i++){
@@ -46,6 +54,7 @@ public class RarestPiece {
 		}
 	}
 	
+	// Increments the specified index's rarity value by 1.
 	private void indexIncrement(int index){
 		
 		int j = 0;
@@ -62,6 +71,7 @@ public class RarestPiece {
 		
 	}
 	
+	// Set index specified to the passed rarity value.
 	private void indexSet(int index, int rarityVal){
 		
 		int j = 0;
@@ -78,6 +88,7 @@ public class RarestPiece {
 		
 	}
 	
+	// Sort our pieces by rarity value, most rare (lowest rarity value) first.
 	private void sort(){
 		
 		int count = 0;
@@ -97,10 +108,10 @@ public class RarestPiece {
 		
 	}
 	
+	// Find the most rare, not already downloaded piece to download
 	public int findNextPiece(){
 		
 		int j = 0;
-
 		while(j < ordered.size()){
 			if (ordered.get(j).done == false){
 				ordered.get(j).done = true;
@@ -111,6 +122,7 @@ public class RarestPiece {
 		return -1;	
 	}
 	
+	// Passed a bitfield received by a peer to update rarity values
 	public void bitfieldUpdate(byte[] bitfield){
 		
 		for (int j = 0; j < bitfield.length; j++){

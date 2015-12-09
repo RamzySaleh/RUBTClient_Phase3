@@ -30,12 +30,13 @@ public class PeerManager {
 		this.tracker = tracker;
 		this.torrentInfo = tracker.torrentInfo;	
     	this.peers = tracker.peers;
+    	ConnectionManager();
 	}
 	
 	
 	public void ConnectionManager(){
 		
-		int maxConnections = 15;
+		int maxConnections = 3;
 		peersConnectedTo = new ArrayList<Peer>();
 
 		downloadPeers = new ArrayList<>();
@@ -44,7 +45,7 @@ public class PeerManager {
 		
 		int peerConnectedCount = 0;
 
-		/*
+		
 		while(peerConnectedCount < maxConnections && peerConnectedCount < peers.size()){
 			
 			peersConnectedTo.add((peers.get(peerConnectedCount)));
@@ -56,15 +57,14 @@ public class PeerManager {
 			}
 
 		}
-		*/
+		
 		findPeersDownload();
 		
-		/**
-		 * 
-		 * Keep Alive
-		 * 
-		 */
-		/*
+	}
+	
+	
+	// Method responsible for keepAlive messages
+	public void keepAlive() {
 		long startTime = System.nanoTime();
 		long currentTime;
 		int i = 0;
@@ -72,7 +72,9 @@ public class PeerManager {
 		keepAlive = Message.intToByteArr(0);
 		while(!Client.userInput.equals("-1")){
 			currentTime = System.nanoTime();
-			if(startTime-currentTime>i*(120*1000)){
+  			long interval = i*120*(long)Math.pow(10, 9);
+			if(currentTime-startTime>interval){
+				System.out.println("KEEP ALIVE!");
 				for (int j = 0; j<downloadPeers.size(); j++){
 					try {
 						if (downloadPeers.get(j) != null) {
@@ -82,41 +84,29 @@ public class PeerManager {
 						e.printStackTrace();
 					}
 				}
+				i++;
 			}
-			i++;
 		}
-		*/
+		System.out.println("Keep-alive quit!");
 	}
 	
-	
+	// Finds peers to download from. 
 	public void findPeersDownload(){
 		
 		if (peers == null) System.out.println("Peers is null!");
-		int addedCount = 0;
+
 		for (int i = 0; i < peers.size(); i++)
 		{
 			String currentPeerIP = peers.get(i).getIP();
             if (currentPeerIP.equals("128.6.171.130") || currentPeerIP.equals("128.6.171.131"))
             {
-            	addedCount++;
             	downloadPeers.add(peers.get(i));                    
-            }           
-		}
-
-
-		for (int i = 0; i < peers.size(); i++)
-		{
-			String currentPeerIP = peers.get(i).getIP();
-            if (!currentPeerIP.equals("128.6.171.130") && !currentPeerIP.equals("128.6.171.131"))
-            {
-            	addedCount++;
-            	if (addedCount > 6) break;
-            	downloadPeers.add(peers.get(i));  
             }           
 		}
 
 	}
 	
+	// Returns the peer object of the corresponding IP address
 	public Peer containsDownloadPeer(String ip){
 		
 		for (int j = 0; j < downloadPeers.size(); j++){

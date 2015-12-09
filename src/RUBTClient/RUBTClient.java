@@ -57,8 +57,8 @@ public class RUBTClient
         {
             @Override
             public void run()
-            {
-                peerManager.ConnectionManager();
+            { // Keep alive messages, sent every 2 minutes
+                peerManager.keepAlive();
             }
         };
         pool.execute(r0);
@@ -67,7 +67,7 @@ public class RUBTClient
         {
            @Override
            public void run()
-           {
+           { // Client (used to download)
         	   downloadClient.run();
            }
         };
@@ -77,7 +77,7 @@ public class RUBTClient
         {
            @Override
            public void run()
-           {
+           { // Server (used to upload)
         	   server.run();
            }
         };
@@ -87,7 +87,7 @@ public class RUBTClient
         {
            @Override
            public void run()
-           {
+           { // Update tracker
         	   ut.run();
            }
         };
@@ -95,6 +95,10 @@ public class RUBTClient
         
         while(!Client.userInput.equals("-1")){
         	Thread.sleep(700);
+        }
+        
+        for (int j = 0; j < peerManager.peersConnectedTo.size(); j++){
+        	peerManager.peersConnectedTo.get(j).disconnectPeer();
         }
         pool.shutdown();
 

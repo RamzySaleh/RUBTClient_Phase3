@@ -295,8 +295,6 @@ public class Client implements Runnable{
             return;
         }
         finally{
-
-            peer.disconnectPeer();
         }
     	
     }
