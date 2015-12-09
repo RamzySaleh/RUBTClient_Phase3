@@ -8,12 +8,8 @@ package RUBTClient;
  *
  */
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.ConnectException;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -181,7 +177,7 @@ public class Client implements Runnable{
 
             // Verify handshake
             if (!verifyHandshake(handshakeResponse)) {
-                throw new Exception("Could not verify handshake");
+                throw new Exception("Could not verify handshake from " + peer.getIP());
             }
 
             // Create interested message
@@ -288,11 +284,16 @@ public class Client implements Runnable{
                 }   
             }
         }
-        
-            finally{
+        catch (EOFException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            System.out.println("Couldn't connect to " + peer.getIP());
+        }
+        finally{
 
-                peer.disconnectPeer();
-            }
+            peer.disconnectPeer();
+        }
     	
     }
 

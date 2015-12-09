@@ -44,6 +44,7 @@ public class PeerManager {
 		
 		int peerConnectedCount = 0;
 
+		/*
 		while(peerConnectedCount < maxConnections && peerConnectedCount < peers.size()){
 			
 			peersConnectedTo.add((peers.get(peerConnectedCount)));
@@ -54,8 +55,8 @@ public class PeerManager {
 				System.out.println("Could not connect to Peer at IP = "+peers.get(peerConnectedCount).getIP());
 			}
 
-		}	
-
+		}
+		*/
 		findPeersDownload();
 		
 		/**
@@ -63,6 +64,7 @@ public class PeerManager {
 		 * Keep Alive
 		 * 
 		 */
+		/*
 		long startTime = System.nanoTime();
 		long currentTime;
 		int i = 0;
@@ -71,9 +73,11 @@ public class PeerManager {
 		while(!Client.userInput.equals("-1")){
 			currentTime = System.nanoTime();
 			if(startTime-currentTime>i*(120*1000)){
-				for (int j = 0; j<peersConnectedTo.size(); j++){
+				for (int j = 0; j<downloadPeers.size(); j++){
 					try {
-						peersConnectedTo.get(j).out.write(keepAlive);
+						if (downloadPeers.get(j) != null) {
+							downloadPeers.get(j).out.write(keepAlive);
+						}
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -81,7 +85,7 @@ public class PeerManager {
 			}
 			i++;
 		}
-
+		*/
 	}
 	
 	
@@ -98,18 +102,19 @@ public class PeerManager {
             	downloadPeers.add(peers.get(i));                    
             }           
 		}
-		
+
+
 		for (int i = 0; i < peers.size(); i++)
 		{
 			String currentPeerIP = peers.get(i).getIP();
-            if (!currentPeerIP.equals("128.6.171.130") || !currentPeerIP.equals("128.6.171.131"))
+            if (!currentPeerIP.equals("128.6.171.130") && !currentPeerIP.equals("128.6.171.131"))
             {
             	addedCount++;
             	if (addedCount > 6) break;
             	downloadPeers.add(peers.get(i));  
             }           
 		}
-		
+
 	}
 	
 	public Peer containsDownloadPeer(String ip){

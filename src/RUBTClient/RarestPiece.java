@@ -106,6 +106,7 @@ public class RarestPiece {
 				ordered.get(j).done = true;
 				return ordered.get(j).pieceIndex;
 			}
+			j++;
 		}
 		return -1;	
 	}
