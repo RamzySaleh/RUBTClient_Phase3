@@ -31,6 +31,7 @@ public class PeerManager {
 		this.torrentInfo = tracker.torrentInfo;	
     	this.peers = tracker.peers;
 
+		ConnectionManager();
 	}
 	
 	
